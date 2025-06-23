@@ -1,0 +1,130 @@
+package com.sealcia.fxenglishapp;
+
+import com.sealcia.pojo.*;
+import com.sealcia.services.QuestionServices;
+import com.sealcia.utils.AlertUtils;
+
+import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
+
+import java.net.URL;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.ResourceBundle;
+import java.util.UUID;
+
+public class ManageController implements Initializable {
+    @FXML
+    private VBox vBox;
+    @FXML
+    private ComboBox<Category> cbCategories;
+    @FXML
+    private TextField txtContent;
+    @FXML
+    private TextField txtA;
+    @FXML
+    private TextField txtB;
+    @FXML
+    private TextField txtC;
+    @FXML
+    private TextField txtD;
+    @FXML
+    private RadioButton rdoA;
+    @FXML
+    private RadioButton rdoB;
+    @FXML
+    private RadioButton rdoC;
+    @FXML
+    private RadioButton rdoD;
+    @FXML
+    private TextField txtKeywords;
+    @FXML
+    private TableView<Question> tbQuestion;
+
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        this.cbCategories.prefWidthProperty().bind(this.vBox.widthProperty());
+        this.txtA.prefWidthProperty().bind(this.vBox.widthProperty());
+        this.txtB.prefWidthProperty().bind(this.vBox.widthProperty());
+        this.txtC.prefWidthProperty().bind(this.vBox.widthProperty());
+        this.txtD.prefWidthProperty().bind(this.vBox.widthProperty());
+        try {
+            this.cbCategories.setItems(
+                FXCollections.observableArrayList(QuestionServices.getCategories()));
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        this.loadQuestion();
+
+        this.txtKeywords.textProperty().addListener(et -> {
+            this.tbQuestion.getItems().clear();
+            try {
+                this.tbQuestion.setItems(FXCollections.observableArrayList(
+                    QuestionServices.getQuestions(this.txtKeywords.getText())));
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void addQuestionHandler(ActionEvent event) {
+        String questionId = UUID.randomUUID().toString();
+        Question question =
+            new Question(questionId, this.txtContent.getText(),
+                         this.cbCategories.getSelectionModel().getSelectedItem().getId());
+
+        ArrayList<Choice> choices = new ArrayList<>();
+        choices.add(new Choice(UUID.randomUUID().toString(), this.txtA.getText(), rdoA.isSelected(),
+                               questionId));
+        choices.add(new Choice(UUID.randomUUID().toString(), this.txtB.getText(), rdoB.isSelected(),
+                               questionId));
+        choices.add(new Choice(UUID.randomUUID().toString(), this.txtC.getText(), rdoC.isSelected(),
+                               questionId));
+        choices.add(new Choice(UUID.randomUUID().toString(), this.txtD.getText(), rdoD.isSelected(),
+                               questionId));
+
+        try {
+            QuestionServices.addQuestion(question, choices);
+
+            this.tbQuestion.getItems().clear();
+            this.tbQuestion.setItems(
+                FXCollections.observableArrayList(QuestionServices.getQuestions("")));
+
+            AlertUtils.getInstance().showMessage("Add question successful!");
+        } catch (SQLException e) {
+            AlertUtils.getInstance().showMessage("Failed to add question!: " + e.getMessage());
+        }
+    }
+
+    public void resetHandler(ActionEvent event) {
+    }
+
+    private void loadQuestion() {
+        TableColumn clContent = new TableColumn("Question content");
+        clContent.setPrefWidth(200);
+        clContent.setCellValueFactory(new PropertyValueFactory("content"));
+
+        TableColumn clChoice = new TableColumn("Choices");
+        clChoice.setCellValueFactory(new PropertyValueFactory("choiceView"));
+
+        this.tbQuestion.getColumns().addAll(clContent, clChoice);
+
+        try {
+            this.tbQuestion.setItems(
+                FXCollections.observableArrayList(QuestionServices.getQuestions("")));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}

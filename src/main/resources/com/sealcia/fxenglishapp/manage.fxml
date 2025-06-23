@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox fx:id="vBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="681.0" prefWidth="600.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sealcia.fxenglishapp.ManageController">
+    <children>
+        <TextField fx:id="txtContent" promptText="Question content..." styleClass="Controls" stylesheets="@style.css" />
+        <ComboBox fx:id="cbCategories" prefWidth="150.0" promptText="Category..." styleClass="Controls" />
+        <HBox prefHeight="100.0" prefWidth="200.0" styleClass="Choice">
+            <children>
+                <RadioButton fx:id="rdoA" mnemonicParsing="false" text="A">
+               <toggleGroup>
+                  <ToggleGroup fx:id="Choice" />
+               </toggleGroup></RadioButton>
+                <TextField fx:id="txtA" promptText="Choice A..." styleClass="Controls" />
+            </children>
+        </HBox>
+        <HBox layoutX="10.0" layoutY="198.0" prefHeight="100.0" prefWidth="200.0" styleClass="Choice">
+            <children>
+                <RadioButton fx:id="rdoB" mnemonicParsing="false" text="B" toggleGroup="$Choice" />
+                <TextField fx:id="txtB" promptText="Choice B..." styleClass="Controls" />
+            </children>
+        </HBox>
+        <HBox layoutX="10.0" layoutY="143.0" prefHeight="100.0" prefWidth="200.0" styleClass="Choice">
+            <children>
+                <RadioButton fx:id="rdoC" mnemonicParsing="false" text="C" toggleGroup="$Choice" />
+                <TextField fx:id="txtC" promptText="Choice C..." styleClass="Controls" />
+            </children>
+        </HBox>
+        <HBox layoutX="10.0" layoutY="88.0" prefHeight="100.0" prefWidth="200.0" styleClass="Choice">
+            <children>
+                <RadioButton fx:id="rdoD" mnemonicParsing="false" text="D" toggleGroup="$Choice" />
+                <TextField fx:id="txtD" promptText="Choice D..." styleClass="Controls" />
+            </children>
+        </HBox>
+        <HBox prefHeight="76.0" prefWidth="580.0">
+            <children>
+                <Button mnemonicParsing="false" onAction="#addQuestionHandler" styleClass="Button" text="Add question" />
+                <Button mnemonicParsing="false" onAction="#resetHandler" styleClass="Button" text="Reset" />
+            </children>
+        </HBox>
+      <TextField fx:id="txtKeywords" promptText="Enter keywords..." styleClass="Controls" />
+      <TableView fx:id="tbQuestion" prefHeight="394.0" prefWidth="580.0" />
+    </children>
+</VBox>
