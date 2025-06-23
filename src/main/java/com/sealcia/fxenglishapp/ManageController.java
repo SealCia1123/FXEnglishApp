@@ -84,6 +84,17 @@ public class ManageController implements Initializable {
     }
 
     public void addQuestionHandler(ActionEvent event) {
+        if (this.cbCategories.getSelectionModel().isEmpty()) {
+            AlertUtils.getInstance().showMessage("WARNING", "Please enter the category!");
+            return;
+        }
+
+        if (this.txtA.getText().isEmpty() || this.txtB.getText().isEmpty() ||
+            this.txtC.getText().isEmpty() || this.txtD.getText().isEmpty()) {
+            AlertUtils.getInstance().showMessage("WARNING", "Please fill all 4 choices!");
+            return;
+        }
+
         String questionId = UUID.randomUUID().toString();
         Question question =
             new Question(questionId, this.txtContent.getText(),

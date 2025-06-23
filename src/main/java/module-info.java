@@ -13,7 +13,6 @@ module com.sealcia.fxenglishapp {
     requires com.almasb.fxgl.all;
     requires javafx.swing;
     opens com.sealcia.fxenglishapp to javafx.fxml;
-
     exports com.sealcia.pojo;
     exports com.sealcia.services;
     exports com.sealcia.utils;

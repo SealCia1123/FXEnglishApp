@@ -18,7 +18,7 @@ public class JdbcUtils {
 
     private JdbcUtils() throws SQLException {
         connection =
-                DriverManager.getConnection("jdbc:mysql://localhost/englishdb", "root", "root");
+            DriverManager.getConnection("jdbc:mysql://localhost/englishdb", "root", "root");
     }
 
     public static JdbcUtils getInstance() throws SQLException {
