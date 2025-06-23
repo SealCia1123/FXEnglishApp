@@ -28,10 +28,10 @@ public class QuestionServices {
 
     public static void addQuestion(Question question, ArrayList<Choice> choices)
         throws SQLException {
-        Connection connection = JdbcUtils.getInstance().connect();
         String sql1 = "INSERT INTO question(id, content, category_id) VALUES(?, ?, ?)";
         String sql2 = "INSERT INTO choice(id, content, is_correct, question_id) VALUES(?, ?, ?, ?)";
 
+        Connection connection = JdbcUtils.getInstance().connect();
         connection.setAutoCommit(false);
 
         PreparedStatement stm = connection.prepareStatement(sql1);
@@ -91,5 +91,23 @@ public class QuestionServices {
                                    rs.getBoolean("is_correct"), rs.getString("question_id")));
         }
         return choices;
+    }
+
+    public static void deleteQuestion(String questionId) throws SQLException {
+        String sql1 = "DELETE FROM choice WHERE question_id = ?";
+        String sql2 = "DELETE FROM question WHERE id = ?";
+        Connection connection = JdbcUtils.getInstance().connect();
+
+        PreparedStatement stmDeleteChoice = connection.prepareStatement(sql1);
+        PreparedStatement stmDeleteQuestion = connection.prepareStatement(sql2);
+        stmDeleteChoice.setString(1, questionId);
+        stmDeleteQuestion.setString(1, questionId);
+
+        connection.setAutoCommit(false);
+
+        stmDeleteChoice.executeUpdate();
+        stmDeleteQuestion.executeUpdate();
+
+        connection.commit();
     }
 }

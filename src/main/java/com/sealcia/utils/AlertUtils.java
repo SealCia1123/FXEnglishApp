@@ -5,11 +5,10 @@ import javafx.scene.control.Alert.AlertType;
 
 public class AlertUtils {
     private static AlertUtils instance;
-    private static Alert alert;
+    private Alert alert;
 
     private AlertUtils() {
         alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle("INFORMATION");
     }
 
     public static AlertUtils getInstance() {
@@ -18,9 +17,10 @@ public class AlertUtils {
         }
         return instance;
     }
-
-    public void showMessage(String msg) {
+    public void showMessage(String title, String msg) {
+        alert.setTitle(title);
         alert.setContentText(msg);
-        alert.show();
+        alert.showAndWait();
+        alert.close();
     }
 }

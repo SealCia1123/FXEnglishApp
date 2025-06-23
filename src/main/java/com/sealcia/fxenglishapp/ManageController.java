@@ -8,8 +8,13 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -101,9 +106,15 @@ public class ManageController implements Initializable {
             this.tbQuestion.setItems(
                 FXCollections.observableArrayList(QuestionServices.getQuestions("")));
 
-            AlertUtils.getInstance().showMessage("Add question successful!");
+            this.txtContent.clear();
+            this.txtA.clear();
+            this.txtB.clear();
+            this.txtC.clear();
+            this.txtD.clear();
+            AlertUtils.getInstance().showMessage("INFORMATION", "Add question successful!");
         } catch (SQLException e) {
-            AlertUtils.getInstance().showMessage("Failed to add question!: " + e.getMessage());
+            AlertUtils.getInstance().showMessage("ERROR",
+                                                 "Failed to add question!: " + e.getMessage());
         }
     }
 
@@ -118,8 +129,38 @@ public class ManageController implements Initializable {
         TableColumn clChoice = new TableColumn("Choices");
         clChoice.setCellValueFactory(new PropertyValueFactory("choiceView"));
 
-        this.tbQuestion.getColumns().addAll(clContent, clChoice);
+        TableColumn clAction = new TableColumn();
+        clAction.setCellFactory(p -> {
+            Button btn = new Button("Delete");
+            btn.setOnAction(et -> {
+                Alert confirm = new Alert(AlertType.CONFIRMATION);
+                confirm.setContentText("Are you sure to delete this question?");
+                confirm.showAndWait().ifPresent(res -> {
+                    if (res == ButtonType.OK) {
+                        TableCell cl = (TableCell)((Button)et.getSource()).getParent();
+                        Question q = (Question)cl.getTableRow().getItem();
+                        try {
+                            QuestionServices.deleteQuestion(q.getId());
+                            AlertUtils.getInstance().showMessage("INFORMATION",
+                                                                 "Delete question successful!");
 
+                            this.tbQuestion.getItems().clear();
+                            this.tbQuestion.setItems(FXCollections.observableArrayList(
+                                QuestionServices.getQuestions("")));
+                        } catch (SQLException e) {
+                            AlertUtils.getInstance().showMessage("ERROR",
+                                                                 "Failed to delete question");
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            });
+            TableCell cell = new TableCell();
+            cell.setGraphic(btn);
+            return cell;
+        });
+
+        this.tbQuestion.getColumns().addAll(clContent, clChoice, clAction);
         try {
             this.tbQuestion.setItems(
                 FXCollections.observableArrayList(QuestionServices.getQuestions("")));
