@@ -106,19 +106,29 @@ public class ManageController implements Initializable {
             this.tbQuestion.setItems(
                 FXCollections.observableArrayList(QuestionServices.getQuestions("")));
 
-            this.txtContent.clear();
-            this.txtA.clear();
-            this.txtB.clear();
-            this.txtC.clear();
-            this.txtD.clear();
+            this.clearField();
+
             AlertUtils.getInstance().showMessage("INFORMATION", "Add question successful!");
         } catch (SQLException e) {
             AlertUtils.getInstance().showMessage("ERROR",
                                                  "Failed to add question!: " + e.getMessage());
         }
     }
+    public void clearField() {
+        this.txtContent.clear();
+        this.txtA.clear();
+        this.txtB.clear();
+        this.txtC.clear();
+        this.txtD.clear();
+        this.rdoA.setSelected(false);
+        this.rdoB.setSelected(false);
+        this.rdoC.setSelected(false);
+        this.rdoD.setSelected(false);
+        this.cbCategories.getSelectionModel().clearSelection();
+    }
 
     public void resetHandler(ActionEvent event) {
+        this.clearField();
     }
 
     private void loadQuestion() {
