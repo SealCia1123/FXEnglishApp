@@ -1,6 +1,7 @@
 package com.sealcia.fxenglishapp;
 
 import com.sealcia.pojo.*;
+import com.sealcia.services.CategoryServices;
 import com.sealcia.services.QuestionServices;
 import com.sealcia.utils.AlertUtils;
 
@@ -64,7 +65,7 @@ public class ManageController implements Initializable {
         this.txtD.prefWidthProperty().bind(this.vBox.widthProperty());
         try {
             this.cbCategories.setItems(
-                FXCollections.observableArrayList(QuestionServices.getCategories()));
+                FXCollections.observableArrayList(CategoryServices.getCategories()));
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -85,13 +86,13 @@ public class ManageController implements Initializable {
 
     public void addQuestionHandler(ActionEvent event) {
         if (this.cbCategories.getSelectionModel().isEmpty()) {
-            AlertUtils.getInstance().showMessage("WARNING", "Please enter the category!");
+            AlertUtils.getAlert(AlertType.WARNING, "Please enter the category!").showAndWait();
             return;
         }
 
         if (this.txtA.getText().isEmpty() || this.txtB.getText().isEmpty() ||
             this.txtC.getText().isEmpty() || this.txtD.getText().isEmpty()) {
-            AlertUtils.getInstance().showMessage("WARNING", "Please fill all 4 choices!");
+            AlertUtils.getAlert(AlertType.WARNING, "Please fill all 4 choices!").showAndWait();
             return;
         }
 
@@ -119,10 +120,10 @@ public class ManageController implements Initializable {
 
             this.clearField();
 
-            AlertUtils.getInstance().showMessage("INFORMATION", "Add question successful!");
+            AlertUtils.getAlert(AlertType.INFORMATION, "Add question successful!").showAndWait();
         } catch (SQLException e) {
-            AlertUtils.getInstance().showMessage("ERROR",
-                                                 "Failed to add question!: " + e.getMessage());
+            AlertUtils.getAlert(AlertType.ERROR, "Failed to add question: " + e.getMessage())
+                .showAndWait();
         }
     }
     public void clearField() {
@@ -154,23 +155,24 @@ public class ManageController implements Initializable {
         clAction.setCellFactory(p -> {
             Button btn = new Button("Delete");
             btn.setOnAction(et -> {
-                Alert confirm = new Alert(AlertType.CONFIRMATION);
-                confirm.setContentText("Are you sure to delete this question?");
+                Alert confirm = AlertUtils.getAlert(AlertType.CONFIRMATION,
+                                                    "Are you sure to delete this question?");
                 confirm.showAndWait().ifPresent(res -> {
                     if (res == ButtonType.OK) {
                         TableCell cl = (TableCell)((Button)et.getSource()).getParent();
                         Question q = (Question)cl.getTableRow().getItem();
                         try {
                             QuestionServices.deleteQuestion(q.getId());
-                            AlertUtils.getInstance().showMessage("INFORMATION",
-                                                                 "Delete question successful!");
+                            AlertUtils
+                                .getAlert(AlertType.INFORMATION, "Delete question successful!")
+                                .showAndWait();
 
                             this.tbQuestion.getItems().clear();
                             this.tbQuestion.setItems(FXCollections.observableArrayList(
                                 QuestionServices.getQuestions("")));
                         } catch (SQLException e) {
-                            AlertUtils.getInstance().showMessage("ERROR",
-                                                                 "Failed to delete question");
+                            AlertUtils.getAlert(AlertType.ERROR,
+                                                "Failed to delete question: " + e.getMessage());
                             e.printStackTrace();
                         }
                     }

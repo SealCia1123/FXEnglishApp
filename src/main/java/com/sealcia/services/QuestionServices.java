@@ -7,25 +7,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 public class QuestionServices {
-    public static List<Category> getCategories() throws SQLException {
-        Connection connection = JdbcUtils.getInstance().connect();
-        Statement stm = connection.createStatement();
-        ResultSet rs = stm.executeQuery("SELECT * FROM category");
-
-        List<Category> categories = new ArrayList<>();
-        while (rs.next()) {
-            int id = rs.getInt("id");
-            String name = rs.getString("name");
-            categories.add(new Category(id, name));
-        }
-        return categories;
-    }
-
     public static void addQuestion(Question question, ArrayList<Choice> choices)
         throws SQLException {
         String sql1 = "INSERT INTO question(id, content, category_id) VALUES(?, ?, ?)";
@@ -72,25 +57,10 @@ public class QuestionServices {
             Question q =
                 new Question(rs.getString("id"), rs.getString("content"), rs.getInt("category_id"));
             questions.add(q);
-            List<Choice> choices = getChoicesByQuestion(q.getId());
+            List<Choice> choices = ChoiceServices.getChoicesByQuestion(q.getId());
             q.setChoices(choices);
         }
         return questions;
-    }
-
-    public static List<Choice> getChoicesByQuestion(String questionId) throws SQLException {
-        Connection connection = JdbcUtils.getInstance().connect();
-        PreparedStatement stm =
-            connection.prepareStatement("SELECT * FROM choice WHERE question_id = ?");
-        stm.setString(1, questionId);
-        ResultSet rs = stm.executeQuery();
-
-        List<Choice> choices = new ArrayList<>();
-        while (rs.next()) {
-            choices.add(new Choice(rs.getString("id"), rs.getString("content"),
-                                   rs.getBoolean("is_correct"), rs.getString("question_id")));
-        }
-        return choices;
     }
 
     public static void deleteQuestion(String questionId) throws SQLException {
