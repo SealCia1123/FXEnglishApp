@@ -14,14 +14,16 @@ public class ChoiceServices {
     public static List<Choice> getChoicesByQuestion(String questionId) throws SQLException {
         Connection connection = JdbcUtils.getInstance().connect();
         PreparedStatement stm =
-            connection.prepareStatement("SELECT * FROM choice WHERE question_id = ?");
+                connection.prepareStatement("SELECT * FROM choice WHERE question_id = ?");
         stm.setString(1, questionId);
         ResultSet rs = stm.executeQuery();
 
         List<Choice> choices = new ArrayList<>();
         while (rs.next()) {
-            choices.add(new Choice(rs.getString("id"), rs.getString("content"),
-                                   rs.getBoolean("is_correct"), rs.getString("question_id")));
+            choices.add(
+                    new Choice(
+                            rs.getString("id"), rs.getString("content"),
+                            rs.getBoolean("is_correct"), rs.getString("question_id")));
         }
         return choices;
     }

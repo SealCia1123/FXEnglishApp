@@ -12,7 +12,7 @@ import java.util.List;
 
 public class QuestionServices {
     public static void addQuestion(Question question, ArrayList<Choice> choices)
-        throws SQLException {
+            throws SQLException {
         String sql1 = "INSERT INTO question(id, content, category_id) VALUES(?, ?, ?)";
         String sql2 = "INSERT INTO choice(id, content, is_correct, question_id) VALUES(?, ?, ?, ?)";
 
@@ -55,7 +55,8 @@ public class QuestionServices {
         List<Question> questions = new ArrayList<>();
         while (rs.next()) {
             Question q =
-                new Question(rs.getString("id"), rs.getString("content"), rs.getInt("category_id"));
+                    new Question(
+                            rs.getString("id"), rs.getString("content"), rs.getInt("category_id"));
             questions.add(q);
             List<Choice> choices = ChoiceServices.getChoicesByQuestion(q.getId());
             q.setChoices(choices);
