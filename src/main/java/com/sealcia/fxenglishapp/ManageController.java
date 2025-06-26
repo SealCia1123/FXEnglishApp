@@ -113,8 +113,8 @@ public class ManageController implements Initializable {
         Question question =
                 new Question(
                         questionId,
-                        this.txtContent.getText(),
-                        this.cbCategories.getSelectionModel().getSelectedItem().getId());
+                        txtContent.getText(),
+                        cbCategories.getSelectionModel().getSelectedItem().getId());
 
         ArrayList<Choice> choices = new ArrayList<>();
         choices.add(
@@ -182,15 +182,21 @@ public class ManageController implements Initializable {
         this.clearField();
     }
 
-    private void loadQuestion() {
-        TableColumn clContent = new TableColumn("Question content");
+    private TableColumn<Question, String> createQuestionContentColumn() {
+        TableColumn<Question, String> clContent = new TableColumn("Question content");
         clContent.setPrefWidth(200);
         clContent.setCellValueFactory(new PropertyValueFactory("content"));
+        return clContent;
+    }
 
-        TableColumn clChoice = new TableColumn("Choices");
-        clChoice.setCellValueFactory(new PropertyValueFactory("choiceView"));
+    private TableColumn<Question, String> createChoiceColumn() {
+        TableColumn<Question, String> clChoice = new TableColumn("Choices");
+        clChoice.setCellValueFactory(new PropertyValueFactory<>("choiceView"));
+        return clChoice;
+    }
 
-        TableColumn clAction = new TableColumn();
+    private TableColumn<Question, Void> createActionColumn() {
+        TableColumn<Question, Void> clAction = new TableColumn<>("Action");
         clAction.setCellFactory(
                 p -> {
                     Button btn = new Button("Delete");
@@ -215,14 +221,12 @@ public class ManageController implements Initializable {
                                                                     q.getId());
                                                             AlertUtils.showAlertMessage(
                                                                     AlertType.INFORMATION,
-                                                                    "Delete question"
-                                                                            + " successful!");
+                                                                    "Delete question successful!");
                                                             this.refreshTableView();
                                                         } catch (SQLException e) {
                                                             AlertUtils.showAlertMessage(
                                                                     AlertType.ERROR,
-                                                                    "Failed to delete"
-                                                                            + " question!");
+                                                                    "Failed to delete question!");
                                                             e.printStackTrace();
                                                         }
                                                     }
@@ -232,10 +236,18 @@ public class ManageController implements Initializable {
                     cell.setGraphic(btn);
                     return cell;
                 });
+        return clAction;
+    }
+
+    private void loadQuestion() {
+        TableColumn<Question, String> clContent = this.createQuestionContentColumn();
+        TableColumn<Question, String> clChoice = this.createChoiceColumn();
+        TableColumn<Question, Void> clAction = this.createActionColumn();
 
         this.tbQuestion.getColumns().addAll(clContent, clChoice, clAction);
+
         try {
-            this.tbQuestion.setItems(
+            tbQuestion.setItems(
                     FXCollections.observableArrayList(QuestionServices.getQuestions("")));
         } catch (SQLException e) {
             e.printStackTrace();
