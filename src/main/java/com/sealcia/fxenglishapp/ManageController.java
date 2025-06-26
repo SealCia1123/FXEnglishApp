@@ -9,7 +9,6 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -96,23 +95,17 @@ public class ManageController implements Initializable {
 
     public void addQuestionHandler(ActionEvent event) {
         if (this.isComboBoxChosen()) {
-            AlertUtils.getInstance()
-                    .getAlert(AlertType.WARNING, "Please enter the category!")
-                    .show();
+            AlertUtils.showAlertMessage(AlertType.WARNING, "Please enter the category!");
             return;
         }
 
         if (this.areChoicesFilled()) {
-            AlertUtils.getInstance()
-                    .getAlert(AlertType.WARNING, "Please fill all 4 choices!")
-                    .show();
+            AlertUtils.showAlertMessage(AlertType.WARNING, "Please fill ALL 4 choices!");
             return;
         }
 
         if (this.isRadioButtonSelected()) {
-            AlertUtils.getInstance()
-                    .getAlert(AlertType.WARNING, "Please check one choice is correct")
-                    .show();
+            AlertUtils.showAlertMessage(AlertType.WARNING, "Please check ONE correct choice");
             return;
         }
 
@@ -125,47 +118,51 @@ public class ManageController implements Initializable {
 
         ArrayList<Choice> choices = new ArrayList<>();
         choices.add(
-                new Choice(
-                        UUID.randomUUID().toString(),
-                        this.txtA.getText(),
-                        rdoA.isSelected(),
-                        questionId));
+                new Choice.Builder()
+                        .id(UUID.randomUUID().toString())
+                        .content(this.txtA.getText())
+                        .correct(rdoA.isSelected())
+                        .questionId(questionId)
+                        .build());
         choices.add(
-                new Choice(
-                        UUID.randomUUID().toString(),
-                        this.txtB.getText(),
-                        rdoB.isSelected(),
-                        questionId));
+                new Choice.Builder()
+                        .id(UUID.randomUUID().toString())
+                        .content(this.txtB.getText())
+                        .correct(rdoB.isSelected())
+                        .questionId(questionId)
+                        .build());
         choices.add(
-                new Choice(
-                        UUID.randomUUID().toString(),
-                        this.txtC.getText(),
-                        rdoC.isSelected(),
-                        questionId));
+                new Choice.Builder()
+                        .id(UUID.randomUUID().toString())
+                        .content(this.txtC.getText())
+                        .correct(this.rdoC.isSelected())
+                        .questionId(questionId)
+                        .build());
         choices.add(
-                new Choice(
-                        UUID.randomUUID().toString(),
-                        this.txtD.getText(),
-                        rdoD.isSelected(),
-                        questionId));
+                new Choice.Builder()
+                        .id(UUID.randomUUID().toString())
+                        .content(this.txtD.getText())
+                        .correct(this.rdoD.isSelected())
+                        .questionId(questionId)
+                        .build());
 
         try {
             QuestionServices.addQuestion(question, choices);
 
-            this.tbQuestion.getItems().clear();
-            this.tbQuestion.setItems(
-                    FXCollections.observableArrayList(QuestionServices.getQuestions("")));
-
             this.clearField();
+            this.refreshTableView();
 
-            AlertUtils.getInstance()
-                    .getAlert(AlertType.INFORMATION, "Add question successful!")
-                    .showAndWait();
+            AlertUtils.showAlertMessage(AlertType.INFORMATION, "Add question successful!");
         } catch (SQLException e) {
-            AlertUtils.getInstance()
-                    .getAlert(AlertType.ERROR, "Failed to add question: " + e.getMessage())
-                    .showAndWait();
+            AlertUtils.showAlertMessage(AlertType.ERROR, "Failed to add question!");
+            e.printStackTrace();
         }
+    }
+
+    public void refreshTableView() throws SQLException {
+        this.tbQuestion.getItems().clear();
+        this.tbQuestion.setItems(
+                FXCollections.observableArrayList(QuestionServices.getQuestions("")));
     }
 
     public void clearField() {
@@ -199,12 +196,10 @@ public class ManageController implements Initializable {
                     Button btn = new Button("Delete");
                     btn.setOnAction(
                             et -> {
-                                Alert confirm =
-                                        AlertUtils.getInstance()
-                                                .getAlert(
-                                                        AlertType.CONFIRMATION,
-                                                        "Are you sure to delete this question?");
-                                confirm.showAndWait()
+                                AlertUtils.getAlert(
+                                                AlertType.CONFIRMATION,
+                                                "Are you sure to delete this question?")
+                                        .showAndWait()
                                         .ifPresent(
                                                 res -> {
                                                     if (res == ButtonType.OK) {
@@ -218,28 +213,16 @@ public class ManageController implements Initializable {
                                                         try {
                                                             QuestionServices.deleteQuestion(
                                                                     q.getId());
-                                                            AlertUtils.getInstance()
-                                                                    .getAlert(
-                                                                            AlertType.INFORMATION,
-                                                                            "Delete question"
-                                                                                + " successful!")
-                                                                    .showAndWait();
-
-                                                            this.tbQuestion.getItems().clear();
-                                                            this.tbQuestion.setItems(
-                                                                    FXCollections
-                                                                            .observableArrayList(
-                                                                                    QuestionServices
-                                                                                            .getQuestions(
-                                                                                                    "")));
+                                                            AlertUtils.showAlertMessage(
+                                                                    AlertType.INFORMATION,
+                                                                    "Delete question"
+                                                                            + " successful!");
+                                                            this.refreshTableView();
                                                         } catch (SQLException e) {
-                                                            AlertUtils.getInstance()
-                                                                    .getAlert(
-                                                                            AlertType.ERROR,
-                                                                            "Failed to delete"
-                                                                                    + " question: "
-                                                                                    + e
-                                                                                            .getMessage());
+                                                            AlertUtils.showAlertMessage(
+                                                                    AlertType.ERROR,
+                                                                    "Failed to delete"
+                                                                            + " question!");
                                                             e.printStackTrace();
                                                         }
                                                     }

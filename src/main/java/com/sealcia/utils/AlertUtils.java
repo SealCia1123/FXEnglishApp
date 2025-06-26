@@ -4,17 +4,14 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
 public class AlertUtils {
-    private static final AlertUtils instance = new AlertUtils();
-
     private AlertUtils() {}
 
-    public static AlertUtils getInstance() {
-        return instance;
+    public static void showAlertMessage(AlertType type, String content) {
+        Alert alert = new Alert(type, content);
+        alert.showAndWait();
     }
 
-    public Alert getAlert(AlertType type, String content) {
-        Alert alert = new Alert(type);
-        alert.setContentText(content);
-        return alert;
+    public static Alert getAlert(AlertType type, String content) {
+        return new Alert(type, content);
     }
 }

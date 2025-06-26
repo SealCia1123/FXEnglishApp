@@ -21,9 +21,12 @@ public class ChoiceServices {
         List<Choice> choices = new ArrayList<>();
         while (rs.next()) {
             choices.add(
-                    new Choice(
-                            rs.getString("id"), rs.getString("content"),
-                            rs.getBoolean("is_correct"), rs.getString("question_id")));
+                    new Choice.Builder()
+                            .id(rs.getString("id"))
+                            .content(rs.getString("content"))
+                            .correct(rs.getBoolean("is_correct"))
+                            .questionId(rs.getString("question_id"))
+                            .build());
         }
         return choices;
     }
